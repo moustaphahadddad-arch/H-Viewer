@@ -1,5 +1,10 @@
-- name: Setup Gradle
-  uses: gradle/actions/setup-gradle@v3
+- name: Set Gradle JVM args
+  run: |
+    mkdir -p ~/.gradle
+    echo "systemProp.http.proxyHost=${{ secrets.PROXY_HOST }}" >> ~/.gradle/gradle.properties
+    echo "systemProp.http.proxyPort=${{ secrets.PROXY_PORT }}" >> ~/.gradle/gradle.properties
+    echo "systemProp.https.proxyHost=${{ secrets.PROXY_HOST }}" >> ~/.gradle/gradle.properties
+    echo "systemProp.https.proxyPort=${{ secrets.PROXY_PORT }}" >> ~/.gradle/gradle.properties
 
-- name: Build
+- name: Build with Gradle
   run: ./gradlew build
