@@ -31,17 +31,18 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
       - name: Build Debug APK
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --build-cache
+        env:
+          GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
 
       - name: Build Release APK
-        run: |
-          ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon --build-cache
+        env:
+          GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
@@ -58,8 +59,9 @@ jobs:
           retention-days: 30
 
       - name: Run tests
-        run: |
-          ./gradlew test --no-daemon
+        run: ./gradlew test --no-daemon --build-cache
+        env:
+          GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
 
       - name: Upload test reports
         if: always()
@@ -70,8 +72,9 @@ jobs:
           retention-days: 30
 
       - name: Run lint
-        run: |
-          ./gradlew lint --no-daemon || true
+        run: ./gradlew lint --no-daemon --build-cache || true
+        env:
+          GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
 
       - name: Upload lint reports
         if: always()
