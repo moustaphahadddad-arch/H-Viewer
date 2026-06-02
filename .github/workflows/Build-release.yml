@@ -76,14 +76,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload APK to artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: h-viewer-apk
           path: app/build/outputs/apk/release/*-release.apk
           retention-days: 90
 
       - name: Upload AAB to artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: h-viewer-aab
           path: app/build/outputs/bundle/release/app-release.aab
@@ -114,7 +114,7 @@ jobs:
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: app/build/reports/
@@ -140,7 +140,7 @@ jobs:
           ./gradlew lintRelease --no-daemon || true
 
       - name: Upload Lint Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: lint-reports
