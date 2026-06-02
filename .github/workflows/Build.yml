@@ -31,18 +31,27 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Grant execute permission for gradlew
+      - name: Grant execute permission
         run: chmod +x gradlew
 
+      - name: Cache Gradle distributions
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/wrapper/dists
+          key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --build-cache
-        env:
-          GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+        run: |
+          export GRADLE_OPTS="-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
+          ./gradlew assembleDebug --no-daemon --info
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease --no-daemon --build-cache
-        env:
-          GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+        run: |
+          export GRADLE_OPTS="-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
+          ./gradlew assembleRelease --no-daemon --info
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
@@ -59,9 +68,9 @@ jobs:
           retention-days: 30
 
       - name: Run tests
-        run: ./gradlew test --no-daemon --build-cache
-        env:
-          GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+        run: |
+          export GRADLE_OPTS="-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
+          ./gradlew test --no-daemon --info || true
 
       - name: Upload test reports
         if: always()
@@ -72,9 +81,9 @@ jobs:
           retention-days: 30
 
       - name: Run lint
-        run: ./gradlew lint --no-daemon --build-cache || true
-        env:
-          GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+        run: |
+          export GRADLE_OPTS="-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
+          ./gradlew lint --no-daemon --info || true
 
       - name: Upload lint reports
         if: always()
